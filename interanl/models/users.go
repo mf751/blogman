@@ -21,10 +21,10 @@ type usersModel struct {
 	DB *sql.DB
 }
 
-func (model *usersModel) Insert(user User) (User, error) {
+func (model *usersModel) Insert(user User) (uuid.UUID, error) {
 	sqlStatment := `INSERT INTO users (id ,name, email, hashed_password, created) VALUES(
   $1, $2, $3, $4, $5)
-  RETURNING id, created;
+  RETURNING id;
   )`
 	err := model.DB.QueryRow(sqlStatment,
 		uuid.New().String(),
@@ -32,11 +32,11 @@ func (model *usersModel) Insert(user User) (User, error) {
 		user.Email,
 		user.HashedPassword,
 		time.Now().UTC(),
-	).Scan(&user.ID, &user.Created)
+	).Scan(&user.ID)
 	if errors.Is(err, sql.ErrNoRows) {
-		return User{}, ErrNoRecord
+		return uuid.New(), ErrNoRecord
 	}
-	return user, err
+	return user.ID, err
 }
 
 func (model *usersModel) Get(id uuid.UUID) (User, error) {
@@ -72,33 +72,25 @@ func (model *usersModel) Authenticate(user User, password string) error {
 	return nil
 }
 
-func (model *usersModel) ChangePassword(user User, newPassword string) (User, error) {
+func (model *usersModel) ChangePassword(user User, newPassword string) error {
 	sqlStatment1 := `SELECT hashed_password From users WHERE id=$1`
-	sqlStatment2 := `UPDATE users SET hashed_password=$1 WHERE id=$2 RETURNING name, email, created ;`
+	sqlStatment2 := `UPDATE users SET hashed_password=$1 WHERE id=$2 RETURNING id;`
 	var password string
 	err := model.DB.QueryRow(sqlStatment1, user.ID).Scan(&password)
 	if err != nil {
-		return User{}, err
+		return err
 	}
 
 	if err = bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password)); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return User{}, ErrWrongCredintials
+			return ErrWrongCredintials
 		}
-		return User{}, err
+		return err
 	}
 	newHashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), 12)
 	if err != nil {
-		return User{}, err
+		return err
 	}
-	user.HashedPassword = newHashedPassword
-	err = model.DB.QueryRow(sqlStatment2, string(newHashedPassword), user.ID).Scan(
-		&user.Name,
-		&user.Email,
-		&user.Created,
-	)
-	if err != nil {
-		return User{}, err
-	}
-	return user, nil
+	err = model.DB.QueryRow(sqlStatment2, string(newHashedPassword), user.ID).Scan(&user.ID)
+	return err
 }
