@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"log"
 	"net/http"
@@ -24,6 +25,10 @@ func main() {
 	address := flag.String("addr", ":4001", "HTTP network address")
 	flag.Parse()
 
+	tlsConfig := &tls.Config{
+		CurvePreferences: []tls.CurveID{tls.X25519, tls.CurveP256},
+	}
+
 	server := &http.Server{
 		Addr:         *address,
 		Handler:      app.mainMux(),
@@ -31,10 +36,11 @@ func main() {
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
+		TLSConfig:    tlsConfig,
 	}
 
 	infoLogger.Printf("Starting server on %v", *address)
-	err := server.ListenAndServe()
+	err := server.ListenAndServeTLS("./tls/cert.pem", "./tls/key.pem")
 	if err != nil {
 		errLogger.Fatal(err)
 	}
