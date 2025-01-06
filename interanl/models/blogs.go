@@ -18,11 +18,11 @@ type Blog struct {
 	Views   int
 }
 
-type blogsModel struct {
+type BlogsModel struct {
 	DB *sql.DB
 }
 
-func (model *blogsModel) Insert(title, content string, userID uuid.UUID) (int, error) {
+func (model *BlogsModel) Insert(title, content string, userID uuid.UUID) (int, error) {
 	sqlStatement := `INSERT INTO blogs(title, content, user_id, created, updated, views) Values ($1, $2, $3, NOW(), NOW(), 0) RETURNING id;`
 	var id int
 	err := model.DB.QueryRow(sqlStatement, title, content, userID).Scan(&id)
@@ -32,7 +32,7 @@ func (model *blogsModel) Insert(title, content string, userID uuid.UUID) (int, e
 	return int(id), nil
 }
 
-func (model *blogsModel) Get(id int) (Blog, error) {
+func (model *BlogsModel) Get(id int) (Blog, error) {
 	sqlStatement1 := `SELECT * FROM blogs WHERE id=$1`
 	sqlStatement2 := `UPDATE blogs SET views = views + 1 WHERE id = $1 RETURNING views`
 	blog := Blog{}
@@ -57,7 +57,7 @@ func (model *blogsModel) Get(id int) (Blog, error) {
 	return blog, nil
 }
 
-func (model *blogsModel) Latest() ([]*Blog, error) {
+func (model *BlogsModel) Latest() ([]*Blog, error) {
 	sqlStatement := `SELECT * FROM blogs ORDER BY id DESC LIMIT 10`
 	rows, err := model.DB.Query(sqlStatement)
 	if err != nil {
@@ -87,7 +87,7 @@ func (model *blogsModel) Latest() ([]*Blog, error) {
 	return blogs, nil
 }
 
-func (model *blogsModel) Update(id int, content string) error {
+func (model *BlogsModel) Update(id int, content string) error {
 	sqlStatement := `UPDATE blogs SET content=$1, update=NOW() WHERE id=$2 RETURNING id`
 	err := model.DB.QueryRow(sqlStatement, content, id).Scan(&id)
 	return err

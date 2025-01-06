@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-image: linear-gradient(120deg, #5b116c 25%, #32083c 90%);
+}
+
+.parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.container {
+  padding: 50px 100px;
+  border: 6px solid white;
+  border-radius: 8px;
+  font-size: 32px;
+  font-weight: bolder;
+  background-color: white;
+  color: black;
+  box-shadow:
+    5px 5px 5px 2px black,
+    8px 8px 10px 2px black;
+}
+
+.container span {
+  color: white;
+  background-color: red;
+  padding: 4px 8px;
+  border-radius: 8px;
+}

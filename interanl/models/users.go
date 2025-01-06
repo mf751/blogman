@@ -17,11 +17,11 @@ type User struct {
 	HashedPassword []byte
 }
 
-type usersModel struct {
+type UsersModel struct {
 	DB *sql.DB
 }
 
-func (model *usersModel) Insert(user User) (uuid.UUID, error) {
+func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
 	sqlStatment := `INSERT INTO users (id ,name, email, hashed_password, created) VALUES(
   $1, $2, $3, $4, $5)
   RETURNING id;
@@ -39,7 +39,7 @@ func (model *usersModel) Insert(user User) (uuid.UUID, error) {
 	return user.ID, err
 }
 
-func (model *usersModel) Get(id uuid.UUID) (User, error) {
+func (model *UsersModel) Get(id uuid.UUID) (User, error) {
 	sqlStatment := `SELECT name, email, created FROM users WHERE id=$1;`
 	user := User{ID: id}
 	err := model.DB.QueryRow(sqlStatment, id.String()).Scan(
@@ -53,7 +53,7 @@ func (model *usersModel) Get(id uuid.UUID) (User, error) {
 	return user, err
 }
 
-func (model *usersModel) Authenticate(user User, password string) error {
+func (model *UsersModel) Authenticate(user User, password string) error {
 	sqlStatment := `SELECT id,hashed_password FROM users WHERE email=$1`
 	err := model.DB.QueryRow(sqlStatment, user.Email).Scan(&user.ID, &user.HashedPassword)
 	if err != nil {
@@ -72,7 +72,7 @@ func (model *usersModel) Authenticate(user User, password string) error {
 	return nil
 }
 
-func (model *usersModel) ChangePassword(user User, newPassword string) error {
+func (model *UsersModel) ChangePassword(user User, newPassword string) error {
 	sqlStatment1 := `SELECT hashed_password From users WHERE id=$1`
 	sqlStatment2 := `UPDATE users SET hashed_password=$1 WHERE id=$2 RETURNING id;`
 	var password string

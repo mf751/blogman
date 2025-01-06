@@ -4,18 +4,23 @@ import (
 	"crypto/tls"
 	"database/sql"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/jackc/pgx/v4/stdlib"
+
+	"github.com/mf751/blogman/interanl/models"
 )
 
 type application struct {
-	errLogger  *log.Logger
-	infoLogger *log.Logger
-	db         *sql.DB
+	errLogger     *log.Logger
+	infoLogger    *log.Logger
+	users         models.UsersModel
+	blogs         models.BlogsModel
+	templateCache map[string]*template.Template
 }
 
 func main() {
@@ -34,11 +39,19 @@ func main() {
 	if err != nil {
 		errLogger.Fatal(err)
 	}
+	defer db.Close()
+
+	templateCache, err := newTemplateCache()
+	if err != nil {
+		errLogger.Fatal(err)
+	}
 
 	app := application{
-		errLogger:  errLogger,
-		infoLogger: infoLogger,
-		db:         db,
+		errLogger:     errLogger,
+		infoLogger:    infoLogger,
+		users:         models.UsersModel{DB: db},
+		blogs:         models.BlogsModel{DB: db},
+		templateCache: templateCache,
 	}
 
 	tlsConfig := &tls.Config{

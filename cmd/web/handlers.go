@@ -3,5 +3,14 @@ package main
 import "net/http"
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Home"))
+	_, err := app.blogs.Latest()
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	// data := app.newTemplateData(r)
+	// data.blogs := blogs
+	data := templateData{}
+	app.render(w, "home.tmpl", http.StatusInternalServerError, data)
 }
