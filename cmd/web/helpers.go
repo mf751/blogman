@@ -37,13 +37,13 @@ func (app *application) render(
 	data templateData,
 ) {
 	if page == "serverError" {
-		patterns := []string{"html/serverError.html"}
+		patterns := []string{"html/pages/serverError.html"}
 		templateSet, _ := template.ParseFS(ui.Files, patterns...)
 		templateSet.ExecuteTemplate(w, "serverError", nil)
 		w.WriteHeader(statusCode)
 		return
 	} else if page == "notFound" {
-		patterns := []string{"html/notFound.html"}
+		patterns := []string{"html/pages/notFound.html"}
 		templateSet, _ := template.ParseFS(ui.Files, patterns...)
 		templateSet.ExecuteTemplate(w, "notFound", nil)
 		w.WriteHeader(statusCode)

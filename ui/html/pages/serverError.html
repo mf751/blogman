@@ -1,16 +1,14 @@
-{{define "notFound"}}
+{{define "serverError"}}
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
-    <link href="/static/css/serverError.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/serverError.css" />
   </head>
   <body>
-    <div class="parent">
-      <div class="container"><span>404</span> Page Not Found!</div>
-    </div>
+    <div><span>500 </span> Internal Server Error</div>
   </body>
 </html>
 {{end}}

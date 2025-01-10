@@ -1,0 +1,49 @@
+{{define "search"}}
+<div class="main">
+  <div class="head-bar">
+    <form action="GET">
+      <div>
+        <label for="search-key">Search: </label>
+        <input
+          class="search-key"
+          type="text"
+          name="search-key"
+          placeholder="microsoft job..."
+        />
+        <label for="search-by">By: </label>
+        <input
+          type="radio"
+          name="search-by"
+          id="by-latest"
+          value="Latest"
+          checked
+        />
+        <label for="by-latest">Latest</label>
+        <input
+          type="radio"
+          name="search-by"
+          id="by-views"
+          value="Views"
+          checked
+        />
+        <label for="by-views">Views</label>
+        <input
+          type="radio"
+          name="search-by"
+          id="by-user"
+          value="User"
+          checked
+        />
+        <label for="by-user">User: </label>
+        <input
+          class="search-user"
+          type="text"
+          name="search-user"
+          placeholder="john"
+        />
+      </div>
+      <input type="submit" value="Search" />
+    </form>
+  </div>
+</div>
+{{end}}

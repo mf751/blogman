@@ -3,15 +3,18 @@ package models
 import (
 	"database/sql"
 	"errors"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgconn"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	ID             uuid.UUID
 	Name           string
+	UserName       string
 	Email          string
 	Created        time.Time
 	HashedPassword []byte
@@ -22,19 +25,26 @@ type UsersModel struct {
 }
 
 func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
-	sqlStatment := `INSERT INTO users (id ,name, email, hashed_password, created) VALUES(
+	sqlStatment := `INSERT INTO users (id ,name,user_name, email, hashed_password, created) VALUES(
   $1, $2, $3, $4, $5)
   RETURNING id;
   )`
 	err := model.DB.QueryRow(sqlStatment,
 		uuid.New().String(),
 		user.Name,
+		user.UserName,
 		user.Email,
 		user.HashedPassword,
 		time.Now().UTC(),
 	).Scan(&user.ID)
-	if errors.Is(err, sql.ErrNoRows) {
-		return uuid.New(), ErrNoRecord
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.New(), ErrNoRecord
+		} else {
+			var pgError *pgconn.PgError
+			if pgError.Code == "" && strings.Contains(pgError.Message, "user") {
+			}
+		}
 	}
 	return user.ID, err
 }

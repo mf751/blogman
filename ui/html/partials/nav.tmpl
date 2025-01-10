@@ -1,13 +1,14 @@
 {{define "nav"}}
-<nav>
+<nav class="main">
   <div class="left">
-    <a href="/">Blogs</a>
-    <a href="/users">Users</a>
+    <a href="/" class="active">Blogs</a>
+    <a href="/blog/create">Create Blog</a>
+    <a href="/blogs">My Blogs</a>
   </div>
   <img src="/static/imgs/logo.png" alt="" />
   <div class="right">
-    <a href="/blogs">My Blogs</a>
     <a href="/profile">Profile</a>
+    <a href="/logout">Logout</a>
   </div>
 </nav>
 {{end}}

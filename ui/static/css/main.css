@@ -1,16 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Lilita+One&family=Playpen+Sans:wght@800&display=swap");
+
 body {
   margin: 0;
+  scroll-behavior: smooth;
   padding: 0;
-  /*width: 100vw;*/
+  background-image: url("/static/imgs/bg-2.png");
+  background-attachment: fixed;
   height: calc(100vh - 40px);
-  background-image: linear-gradient(120deg, #5b116c 25%, #32083c 90%);
+  background-size: cover;
+  font-family: "Lilita One", sans-serif;
+  font-family: "Playpen Sans", cursive;
 }
 
-nav {
+.main {
   margin: 20px auto;
-  width: 50%;
-  display: flex;
-  justify-content: space-between;
+  width: 88%;
+}
+
+@media (min-width: 990px) {
+  .main {
+    width: 75%;
+  }
+}
+
+@media (min-width: 1550px) {
+  .main {
+    width: 57%;
+  }
 }
 
 nav div a {
@@ -18,11 +34,201 @@ nav div a {
   color: white;
   font-weight: bolder;
   font-size: 24px;
+  position: relative;
 }
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 nav div a:not(:last-child) {
   margin-right: 20px;
 }
 
+nav div a::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  translate: -50%;
+  width: 0;
+  height: 4px;
+  background-color: white;
+  transition: width 0.3s;
+  border-radius: 4px;
+}
+
+nav div a:hover::after {
+  width: calc(100% + 8px);
+}
+
+nav div .active::after {
+  width: calc(100% + 8px);
+}
+
 nav img {
   width: 50px;
+  filter: brightness(0) invert(1);
+}
+
+.head-bar {
+  width: 100%;
+  padding: 0;
+  position: relative;
+}
+
+.head-bar::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  opacity: 0.66;
+  background-color: #000000;
+  z-index: -1;
+}
+
+.head-bar form {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  border: 2px solid white;
+  border-radius: 2px;
+  padding: 6px 10px;
+  display: flex;
+  overflow: hidden;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.head-bar input[type="submit"] {
+  all: unset;
+  color: black;
+  background-color: white;
+  /*border: 2px solid white;*/
+  padding: 2px 6px;
+  font-weight: bolder;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.head-bar div label {
+  color: white;
+}
+
+.user-search {
+  display: none;
+}
+
+.flex-ordering {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-ordering label {
+  order: 1;
+}
+
+.search-key,
+.search-user {
+  all: unset;
+  background-color: white;
+  border-radius: 2px;
+  align-self: flex-end;
+  padding: 2px 6px;
+  margin-right: 50px;
+}
+
+.search-user {
+  margin: 0;
+  width: 150px;
+  display: none;
+}
+
+.head-bar #by-user:checked ~ .search-user {
+  display: inline;
+}
+
+@media (max-width: 1555px) {
+  .search-key {
+    margin-right: 30px;
+  }
+}
+
+h2 {
+  color: white;
+}
+
+.blog {
+  border: 2px solid white;
+  border-radius: 4px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.blog::after {
+  position: absolute;
+  content: "";
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+  opacity: 0.66;
+  background-color: #000000;
+  z-index: -1;
+}
+
+.blog div:first-child div:first-child {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.blog div:first-child div:first-child div {
+  background-color: white;
+  padding: 4px;
+  border-radius: 0 0 4px 0;
+  padding: 2px 15px;
+}
+
+.blog div:first-child div:first-child div a {
+  color: black;
+  margin-right: 20px;
+}
+.blog div:first-child div:first-child div a:last-of-type {
+  text-decoration: none;
+}
+
+.blog > div:nth-child(2) {
+  border-top: 2px white solid;
+  display: flex;
+  padding: 2px 15px;
+  color: black;
+  background-color: white;
+  justify-content: space-between;
+}
+
+.blog > div:nth-child(2) span:first-of-type {
+  margin-right: 50px;
+}
+.blog > div:first-child h2 {
+  padding: 0 15px;
+}
+.blog > div:first-child h2 a {
+  color: white;
+}
+
+.blog > div:first-child p {
+  padding: 0 15px;
+  color: #c7c7c7;
+  font-size: 1.2em;
+  line-height: 1.6;
 }

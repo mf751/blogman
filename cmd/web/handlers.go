@@ -12,5 +12,5 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	// data := app.newTemplateData(r)
 	// data.blogs := blogs
 	data := templateData{}
-	app.render(w, "home.tmpl", http.StatusInternalServerError, data)
+	app.render(w, "home", http.StatusInternalServerError, data)
 }
