@@ -25,10 +25,10 @@ type UsersModel struct {
 }
 
 func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
-	sqlStatment := `INSERT INTO users (id ,name,user_name, email, hashed_password, created) VALUES(
-  $1, $2, $3, $4, $5)
+	sqlStatment := `INSERT INTO users (id ,name,username, email, hashed_password, created) VALUES(
+  $1, $2, $3, $4, $5, $6)
   RETURNING id;
-  )`
+ `
 	err := model.DB.QueryRow(sqlStatment,
 		uuid.New().String(),
 		user.Name,
@@ -38,11 +38,16 @@ func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
 		time.Now().UTC(),
 	).Scan(&user.ID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return uuid.New(), ErrNoRecord
-		} else {
-			var pgError *pgconn.PgError
-			if pgError.Code == "" && strings.Contains(pgError.Message, "user") {
+		var pgError *pgconn.PgError
+		if errors.As(err, &pgError) {
+			if pgError.Code == "23505" {
+				if strings.Contains(pgError.Message, "users_uc_email") {
+					return uuid.New(), ErrRepeatedEmail
+				} else if strings.Contains(pgError.Message, "users_uc_username") {
+					return uuid.New(), ErrRepeatedUserName
+				}
+			} else if errors.Is(err, sql.ErrNoRows) {
+				return uuid.New(), ErrNoRecord
 			}
 		}
 	}
@@ -50,10 +55,11 @@ func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
 }
 
 func (model *UsersModel) Get(id uuid.UUID) (User, error) {
-	sqlStatment := `SELECT name, email, created FROM users WHERE id=$1;`
+	sqlStatment := `SELECT name, username, email, created FROM users WHERE id=$1;`
 	user := User{ID: id}
 	err := model.DB.QueryRow(sqlStatment, id.String()).Scan(
 		&user.Name,
+		&user.UserName,
 		&user.Email,
 		&user.Created,
 	)
