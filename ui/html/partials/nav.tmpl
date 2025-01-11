@@ -1,16 +1,25 @@
 {{define "nav"}}
 <nav class="main">
   <div class="left">
-    <a href="/" {{if (eq .Active "blogs")}}class="active"{{end}}>Blogs</a>
-    <a href="/blog/create" {{if (eq .Active "create")}}class="active"{{end}}>Create Blog</a>
-    <a href="/blogs" {{if (eq .Active "myBlogs")}}class="active"{{end}}>My Blogs</a>
+  <a href="/" {{if (eq .Active "blogs")}}class="active"{{end}}>Blogs</a>
+    {{if .IsAuthenticated}}
+      <a href="/blog/create" {{if (eq .Active "create")}}class="active"{{end}}>Create Blog</a>
+      <a href="/blogs" {{if (eq .Active "myBlogs")}}class="active"{{end}}>My Blogs</a>
+    {{end}}
   </div>
   <img src="/static/imgs/logo.png" alt="" />
   <div class="right">
-    <a href="/about" {{if (eq .Active "about")}}class="active"{{end}}>About</a>
-    <a href="/profile" {{if (eq .Active "profile")}}class="active"{{end}}>Profile</a>
-    <a href="/user/login" {{if (eq .Active "login")}}class="active"{{end}}>Login</a>
-    <a href="/logout" {{if (eq .Active "logout")}}class="active"{{end}}>Logout</a>
+  <a href="/about" {{if (eq .Active "about")}}class="active"{{end}}>About</a>
+    {{if .IsAuthenticated}}
+      <a href="/account" {{if (eq .Active "account")}}class="active"{{end}}>Account</a>
+      <form action="/user/logout" method="POST">
+        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+        <button>Logout<button>  
+      </form>
+    {{else}}
+      <a href="/user/login" {{if (eq .Active "login")}}class="active"{{end}}>Login</a>
+      <a href="/user/signup" {{if (eq .Active "signup")}}class="active"{{end}}>Sign up</a>
+    {{end}}
   </div>
 </nav>
 {{end}}

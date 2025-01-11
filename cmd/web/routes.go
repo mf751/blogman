@@ -23,6 +23,10 @@ func (app *application) mainMux() http.Handler {
 	mux.Handle(http.MethodGet+" /user/login", firstLayer.ThenFunc(app.userLogin))
 	mux.Handle(http.MethodPost+" /user/login", firstLayer.ThenFunc(app.userLoginPost))
 
+	secondLayer := firstLayer.Append(app.requireAuthentication)
+
+	mux.Handle(http.MethodPost+" /user/logout", secondLayer.ThenFunc(app.userLogoutPost))
+
 	// not found
 	mux.Handle("GET /", firstLayer.ThenFunc(app.notFound))
 

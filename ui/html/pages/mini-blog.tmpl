@@ -1,5 +1,8 @@
 {{define "main"}}
 {{template "search" .}}
+{{with .Flash}}
+  <div class="main flash">{{.}}</div>
+{{end}}
 <div class="main">
   {{range zipBlogsToUsers .Blogs .Users}}
     <div class="blog">

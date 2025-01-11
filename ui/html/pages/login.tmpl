@@ -1,5 +1,8 @@
 {{define "title"}}login{{end}}
 
+{{with .Flash}}
+  <div class="main flash">{{.}}</div>
+{{end}}
 {{define "main"}}
 <div class="main center">
   <div class="container">

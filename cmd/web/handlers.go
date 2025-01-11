@@ -80,6 +80,7 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Form = userLoginForm{}
+	data.Active = "login"
 	app.render(w, "login", http.StatusOK, data)
 }
 
@@ -102,6 +103,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
+		data.Active = "login"
 		app.render(w, "login", http.StatusUnprocessableEntity, data)
 		return
 	}
@@ -111,6 +113,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 			form.AddNonFieldError("Email or Password is incorrect")
 			data := app.newTemplateData(r)
 			data.Form = form
+			data.Active = "login"
 			app.render(w, "login", http.StatusUnprocessableEntity, data)
 		} else {
 			app.serverError(w, err)
@@ -129,5 +132,16 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, originalUrl, http.StatusSeeOther)
 		return
 	}
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
+	err := app.sessionManager.RenewToken(r.Context())
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
+	app.sessionManager.Put(r.Context(), "flash", "You've been logged out succussfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

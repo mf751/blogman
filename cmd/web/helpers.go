@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/go-playground/form/v4"
+	"github.com/google/uuid"
 	"github.com/justinas/nosurf"
 
 	"github.com/mf751/blogman/ui"
@@ -73,8 +74,19 @@ func (app *application) render(
 
 func (app *application) newTemplateData(r *http.Request) *templateData {
 	return &templateData{
-		CSRFToken: nosurf.Token(r),
+		CSRFToken:       nosurf.Token(r),
+		IsAuthenticated: app.isAuthenticated(r),
+		Flash:           app.sessionManager.PopString(r.Context(), "flash"),
 	}
+}
+
+func (app *application) isAuthenticated(r *http.Request) bool {
+	id := r.Context().Value(isAuthenticatedKey)
+	if id == nil {
+		return false
+	}
+	_, err := uuid.Parse(id.(string))
+	return err == nil
 }
 
 func (app *application) decodePostForm(r *http.Request, target any) error {

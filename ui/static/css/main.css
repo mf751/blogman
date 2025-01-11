@@ -29,6 +29,13 @@ body {
   }
 }
 
+.flash {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+}
+
 nav div a {
   text-decoration: none;
   color: white;
@@ -44,11 +51,22 @@ nav {
   position: relative;
 }
 
+button {
+  all: unset;
+  font-size: 24px;
+  font-weight: bolder;
+  position: relative;
+  display: inline;
+  color: white;
+  cursor: pointer;
+}
+
 nav div a:not(:last-child) {
   margin-right: 20px;
 }
 
-nav div a::after {
+nav div a::after,
+nav button::after {
   content: "";
   position: absolute;
   bottom: -6px;
@@ -61,7 +79,8 @@ nav div a::after {
   border-radius: 4px;
 }
 
-nav div a:hover::after {
+nav div a:hover::after,
+nav button:hover::after {
   width: calc(100% + 8px);
 }
 
@@ -76,6 +95,10 @@ nav img {
   top: 50%;
   left: 50%;
   translate: -50% -50%;
+}
+
+nav .right {
+  display: flex;
 }
 
 .head-bar {

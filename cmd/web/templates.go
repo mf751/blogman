@@ -9,13 +9,15 @@ import (
 )
 
 type templateData struct {
-	Blog      *models.Blog
-	User      *models.User
-	Blogs     []*models.Blog
-	Users     []*models.User
-	Form      any
-	Active    string
-	CSRFToken string
+	Blog            *models.Blog
+	User            *models.User
+	Blogs           []*models.Blog
+	Users           []*models.User
+	Form            any
+	Active          string
+	CSRFToken       string
+	IsAuthenticated bool
+	Flash           string
 }
 
 type BlogUserPair struct {
@@ -54,7 +56,7 @@ func newTemplateCache() (map[string]*template.Template, error) {
 
 	base := "html/base.tmpl"
 	nav := "html/partials/nav.tmpl"
-	search := "html/pages/search.tmpl"
+	search := "html/partials/search.tmpl"
 	miniBlog := "html/pages/mini-blog.tmpl"
 	patterns := []string{
 		base,
