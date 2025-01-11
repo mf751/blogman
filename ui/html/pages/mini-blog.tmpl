@@ -1,0 +1,29 @@
+{{define "main"}}
+<div class="main">
+  {{range zipBlogsToUsers .Blogs .Users}}
+    <div class="blog">
+      <div>
+        <div>
+          <div>
+            <a href="/user/{{.User.UserName}}">{{.User.Name}}</a>
+            <a href="/blog/{{.Blog.ID}}">#{{.Blog.ID}}</a>
+          </div>
+        </div>
+        <h2>
+          <a href="/blog/{{.Blog.ID}}">{{.Blog.Title}}</a>
+        </h2>
+        <p>
+          {{.Blog.Content}}
+        </p>
+      </div>
+      <div>
+        <span>Views: {{.Blog.Views}}</span>
+        <div>
+          <span>Updated: {{humanDate .Blog.Updated}}</span>
+          <span>Created: {{humanDate .Blog.Created}}</span>
+        </div>
+      </div>
+    </div>
+  {{end}}
+</div>
+{{end}}

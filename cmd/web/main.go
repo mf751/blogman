@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4/stdlib"
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mf751/blogman/interanl/models"
 )
@@ -53,40 +52,6 @@ func main() {
 		users:         models.UsersModel{DB: db},
 		blogs:         models.BlogsModel{DB: db},
 		templateCache: templateCache,
-	}
-
-	user := models.User{}
-	user.Name = "John Doe"
-	user.Email = "johndose@gmail.com"
-	user.UserName = "johndoe"
-	user.HashedPassword, err = bcrypt.GenerateFromPassword([]byte("johndoe"), 12)
-	_, err = app.users.Insert(user)
-	if err != nil {
-		log.Fatal(err)
-	}
-	user.Name = "Lane wagnar"
-	user.Email = "lanewagnar@gmail.com"
-	user.UserName = "lanewagnar"
-	user.HashedPassword, err = bcrypt.GenerateFromPassword([]byte("lanewagnar"), 12)
-	_, err = app.users.Insert(user)
-	if err != nil {
-		log.Fatal(err)
-	}
-	user.Name = "moshrif"
-	user.Email = "moshrif@gmail.com"
-	user.UserName = "moshrif"
-	user.HashedPassword, err = bcrypt.GenerateFromPassword([]byte("moshrif"), 12)
-	_, err = app.users.Insert(user)
-	if err != nil {
-		log.Fatal(err)
-	}
-	user.Name = "falah"
-	user.Email = "falah@gmail.com"
-	user.UserName = "falah"
-	user.HashedPassword, err = bcrypt.GenerateFromPassword([]byte("falah"), 12)
-	_, err = app.users.Insert(user)
-	if err != nil {
-		log.Fatal(err)
 	}
 
 	tlsConfig := &tls.Config{

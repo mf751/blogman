@@ -23,18 +23,18 @@ func secureHeaders(next http.Handler) http.Handler {
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
 	app.errLogger.Output(2, err.Error())
-	app.render(w, "serverError", http.StatusInternalServerError, templateData{})
+	app.render(w, "serverError", http.StatusInternalServerError, &templateData{})
 }
 
 func (app *application) notFound(w http.ResponseWriter, r *http.Request) {
-	app.render(w, "notFound", http.StatusNotFound, templateData{})
+	app.render(w, "notFound", http.StatusNotFound, &templateData{})
 }
 
 func (app *application) render(
 	w http.ResponseWriter,
 	page string,
 	statusCode int,
-	data templateData,
+	data *templateData,
 ) {
 	if page == "serverError" {
 		patterns := []string{"html/pages/serverError.html"}
@@ -65,4 +65,8 @@ func (app *application) render(
 	}
 	w.WriteHeader(statusCode)
 	buf.WriteTo(w)
+}
+
+func (app *application) newTemplateData(r *http.Request) *templateData {
+	return &templateData{}
 }
