@@ -3,7 +3,9 @@
 {{define "main"}}
 {{template "search" .}}
 {{with .Flash}}
-  <div class="main flash">{{.}}</div>
+  <div class="main flash">
+    <div>{{.}}</div>
+  </div>
 {{end}}
 <div class="main">
   <div class="full-blog">

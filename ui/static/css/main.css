@@ -36,6 +36,17 @@ body {
   padding: 15px;
 }
 
+.flash div {
+  background-color: white;
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  justify-content: center;
+  align-content: center;
+  display: flex;
+  font-size: 22px;
+}
+
 nav div a {
   text-decoration: none;
   color: white;

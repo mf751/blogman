@@ -126,9 +126,9 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", (*ID).String())
-	originalUrl := app.sessionManager.GetString(r.Context(), "original-path")
+	app.sessionManager.Put(r.Context(), "flash", "You've logged in succussfully")
+	originalUrl := app.sessionManager.PopString(r.Context(), "original-path")
 	if originalUrl != "" {
-		app.sessionManager.Remove(r.Context(), "original-path")
 		http.Redirect(w, r, originalUrl, http.StatusSeeOther)
 		return
 	}
