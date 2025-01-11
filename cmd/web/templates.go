@@ -9,6 +9,8 @@ import (
 )
 
 type templateData struct {
+	Blog  *models.Blog
+	User  *models.User
 	Blogs []*models.Blog
 	Users []*models.User
 }

@@ -32,7 +32,7 @@ func (model *BlogsModel) Insert(title, content string, userID uuid.UUID) (int, e
 	return int(id), nil
 }
 
-func (model *BlogsModel) Get(id int) (Blog, error) {
+func (model *BlogsModel) Get(id int) (*Blog, error) {
 	sqlStatement1 := `SELECT * FROM blogs WHERE id=$1`
 	sqlStatement2 := `UPDATE blogs SET views = views + 1 WHERE id = $1 RETURNING views`
 	blog := Blog{}
@@ -46,15 +46,15 @@ func (model *BlogsModel) Get(id int) (Blog, error) {
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return Blog{}, ErrNoRecord
+			return nil, ErrNoRecord
 		}
-		return Blog{}, err
+		return nil, err
 	}
 	err = model.DB.QueryRow(sqlStatement2, id).Scan(&blog.Views)
 	if err != nil {
-		return Blog{}, err
+		return nil, err
 	}
-	return blog, nil
+	return &blog, nil
 }
 
 func (model *BlogsModel) Latest() ([]*Blog, error) {

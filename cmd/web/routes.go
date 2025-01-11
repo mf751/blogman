@@ -13,12 +13,17 @@ func (app *application) mainMux() http.Handler {
 
 	fileServer := http.FileServer(http.FS(ui.Files))
 	mux.Handle("GET /static/", fileServer)
+	mux.HandleFunc(http.MethodGet+" /ping", pong)
 
-	firstLayer := alice.New(secureHeaders)
+	firstLayer := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
 	mux.Handle(http.MethodGet+" /{$}", firstLayer.ThenFunc(app.home))
+	mux.Handle(http.MethodGet+" /about", firstLayer.ThenFunc(app.about))
+	mux.Handle(http.MethodGet+" /blog/{id}", firstLayer.ThenFunc(app.blogView))
 
+	// not found
 	mux.Handle("GET /", firstLayer.ThenFunc(app.notFound))
 
-	return firstLayer.Then(mux)
+	bottomLayer := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
+	return bottomLayer.Then(mux)
 }

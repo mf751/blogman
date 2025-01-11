@@ -41,6 +41,7 @@ nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 }
 
 nav div a:not(:last-child) {
@@ -71,6 +72,10 @@ nav div .active::after {
 nav img {
   width: 50px;
   filter: brightness(0) invert(1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
 }
 
 .head-bar {

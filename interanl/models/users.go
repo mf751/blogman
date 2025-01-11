@@ -54,7 +54,7 @@ func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
 	return user.ID, err
 }
 
-func (model *UsersModel) Get(id uuid.UUID) (User, error) {
+func (model *UsersModel) Get(id uuid.UUID) (*User, error) {
 	sqlStatment := `SELECT name, username, email, created FROM users WHERE id=$1;`
 	user := User{ID: id}
 	err := model.DB.QueryRow(sqlStatment, id.String()).Scan(
@@ -64,9 +64,9 @@ func (model *UsersModel) Get(id uuid.UUID) (User, error) {
 		&user.Created,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
-		return user, ErrNoRecord
+		return nil, ErrNoRecord
 	}
-	return user, err
+	return &user, err
 }
 
 func (model *UsersModel) Authenticate(user User, password string) error {
