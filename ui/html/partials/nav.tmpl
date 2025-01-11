@@ -3,7 +3,7 @@
   <div class="left">
   <a href="/" {{if (eq .Active "blogs")}}class="active"{{end}}>Blogs</a>
     {{if .IsAuthenticated}}
-      <a href="/blog/create" {{if (eq .Active "create")}}class="active"{{end}}>Create Blog</a>
+      <a href="/blog" {{if (eq .Active "create")}}class="active"{{end}}>Create Blog</a>
       <a href="/blogs" {{if (eq .Active "myBlogs")}}class="active"{{end}}>My Blogs</a>
     {{end}}
   </div>

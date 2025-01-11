@@ -26,7 +26,8 @@ func (app *application) mainMux() http.Handler {
 	mux.Handle(http.MethodPost+" /user/signup", firstLayer.ThenFunc(app.userSignupPost))
 
 	secondLayer := firstLayer.Append(app.requireAuthentication)
-
+	mux.Handle(http.MethodGet+" /blog", secondLayer.ThenFunc(app.blogCreate))
+	mux.Handle(http.MethodPost+" /blog", secondLayer.ThenFunc(app.blogCreatePost))
 	mux.Handle(http.MethodPost+" /user/logout", secondLayer.ThenFunc(app.userLogoutPost))
 
 	// not found

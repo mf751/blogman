@@ -15,3 +15,9 @@ type userSignupForm struct {
 	Password            string `form:"password"`
 	validator.Validator `form:"-"`
 }
+
+type blogCreateForm struct {
+	Title               string `form:"title"`
+	Content             string `form:"content"`
+	validator.Validator `form:"-"`
+}

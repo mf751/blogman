@@ -2,10 +2,12 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/mf751/blogman/interanl/models"
@@ -21,7 +23,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 
 	users := []*models.User{}
 	for _, blog := range blogs {
-		blog.Content = blog.Content[:500] + "..."
+		if len(blog.Content) > 500 {
+			blog.Content = blog.Content[:500] + "..."
+		}
 		user, err := app.users.Get(blog.UserID)
 		user.Created = time.Time{}
 		user.Email = ""
@@ -37,7 +41,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	data.Users = users
 	data.Active = "blogs"
 
-	app.render(w, "home", http.StatusInternalServerError, data)
+	app.render(w, "home", http.StatusOK, data)
 }
 
 func pong(w http.ResponseWriter, r *http.Request) {
@@ -46,6 +50,7 @@ func pong(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) about(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
+	data.Active = "about"
 	app.render(w, "about", http.StatusOK, data)
 }
 
@@ -219,4 +224,46 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	app.sessionManager.Put(r.Context(), "authenticatedUserID", ID.String())
 	app.sessionManager.Put(r.Context(), "flash", "You've Signed Up succussfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Active = "create"
+	data.Form = blogCreateForm{}
+	app.render(w, "create", http.StatusOK, data)
+}
+
+func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
+	var form blogCreateForm
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be empty")
+	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be empty")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Active = "create"
+		data.Form = form
+		app.render(w, "create", http.StatusUnprocessableEntity, data)
+		return
+	}
+
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	id, err := app.blogs.Insert(form.Title, form.Content, userID)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Blog was created succussfully")
+	http.Redirect(w, r, fmt.Sprintf("/blog/%v", id), http.StatusSeeOther)
 }

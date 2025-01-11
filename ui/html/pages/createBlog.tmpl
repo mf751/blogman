@@ -1,0 +1,32 @@
+{{define "title"}}Create{{end}}
+{{define "main"}}
+<div class="main">
+  <form action="/blog" method="POST">
+    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+    <div class="title-blog">
+      <h2>Create Blog</h2>
+    </div>
+    <div class="label">Title:</div>
+    <div class="blog-body">
+      {{with .Form.FieldErrors.title}}
+        <div class="error">{{.}}</div>
+      {{end}}
+      <textarea class="title" name="title"></textarea>
+      <div class="shadow"></div>
+    </div>
+    <div class="label s">Content:</div>
+    <div class="blog-body">
+      {{with .Form.FieldErrors.content}}
+        <div class="error">{{.}}</div>
+      {{end}}
+      <textarea class="content" name="content"></textarea>
+      <div class="shadow"></div>
+    </div>
+    <div class="create-blog">
+      <input type="submit" value="Create" />
+    </div>
+  </form>
+</div>
+<script src="/static/js/textarea.js">
+</script>
+{{end}}
