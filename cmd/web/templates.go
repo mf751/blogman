@@ -94,5 +94,16 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	}
 	cache["login"] = templateSet
 
+	patterns = []string{
+		base,
+		nav,
+		"html/pages/signup.tmpl",
+	}
+	templateSet, err = template.New("signup").Funcs(functions).ParseFS(ui.Files, patterns...)
+	if err != nil {
+		return nil, err
+	}
+	cache["signup"] = templateSet
+
 	return cache, nil
 }

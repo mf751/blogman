@@ -1,19 +1,27 @@
 {{define "title"}}Sign up{{end}}
 
 {{with .Flash}}
-  <div class="main flash">
-    <div>{{.}}</div>
-  </div>
+  <div class="main flash">{{.}}</div>
 {{end}}
 {{define "main"}}
 <div class="main center">
   <div class="container">
-    <form class="login" action="/user/login" method="POST">
-      <div><h2>Login</h2></div>
+    <form class="login" action="/user/signup" method="POST">
+      <div><h2>Sign Up</h2></div>
       <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
       {{range .Form.NonFieldErrors}}
         <div class="error non-field">{{.}}</div>
       {{end}}
+      <label for="name">Name: </label>
+      {{with .Form.FieldErrors.name}}
+        <div class="error">{{.}}</div>
+      {{end}}
+      <input type="text" name="name" placeholder="John Doe" />
+      <label for="email">Username: </label>
+      {{with .Form.FieldErrors.username}}
+        <div class="error">{{.}}</div>
+      {{end}}
+      <input type="text" name="username" placeholder="johndoe33" />
       <label for="email">Email: </label>
       {{with .Form.FieldErrors.email}}
         <div class="error">{{.}}</div>
@@ -25,7 +33,7 @@
       {{end}}
       <input type="password" name="password" />
       <div class="submit">
-        <input type="submit" value="Login" />
+        <input type="submit" value="Sign Up" />
       </div>
     </form>
   </div>

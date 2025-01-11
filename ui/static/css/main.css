@@ -383,9 +383,9 @@ h2 {
   font-size: 22px;
   display: block;
 }
-.main.center form label:nth-of-type(2) {
-  margin-top: 20px;
-}
+/*.main.center form label:not(:first-of-type) {*/
+/*margin-top: 20px;*/
+/*}*/
 
 .main.center label + div {
   display: inline;

@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/mf751/blogman/interanl/models"
 	"github.com/mf751/blogman/interanl/validator"
 )
@@ -43,6 +45,8 @@ func pong(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) about(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	app.render(w, "about", http.StatusOK, data)
 }
 
 func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
@@ -143,5 +147,76 @@ func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
 	}
 	app.sessionManager.Remove(r.Context(), "authenticatedUserID")
 	app.sessionManager.Put(r.Context(), "flash", "You've been logged out succussfully")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) userSignup(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Form = userSignupForm{}
+	data.Active = "signup"
+	app.render(w, "signup", http.StatusOK, data)
+}
+
+func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
+	var form userSignupForm
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Name), "name", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.UserName), "username", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Email), "email", "This field cannot be blank")
+	form.CheckField(validator.NotBlank(form.Password), "password", "This field cannot be blank")
+	form.CheckField(
+		validator.Matches(form.Email, validator.EmailRX),
+		"email",
+		"This field must be a vlid email address",
+	)
+	form.CheckField(
+		validator.MinChars(form.Password, 8),
+		"password",
+		"This field must be 8 charachters at least",
+	)
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		data.Active = "signup"
+		app.render(w, "signup", http.StatusUnprocessableEntity, data)
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(form.Password), 12)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	user := models.User{
+		Name:           form.Name,
+		UserName:       form.UserName,
+		Email:          form.Email,
+		HashedPassword: hashedPassword,
+	}
+	ID, err := app.users.Insert(user)
+	if err != nil {
+		data := app.newTemplateData(r)
+		if errors.Is(err, models.ErrRepeatedEmail) {
+			form.AddNonFieldError("A uesr exists with this email")
+		} else if errors.Is(err, models.ErrRepeatedUserName) {
+			form.AddNonFieldError("Username already taken")
+		} else {
+			app.serverError(w, err)
+			return
+		}
+		data.Form = form
+		data.Active = "signup"
+		app.render(w, "signup", http.StatusUnprocessableEntity, data)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "authenticatedUserID", ID.String())
+	app.sessionManager.Put(r.Context(), "flash", "You've Signed Up succussfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
