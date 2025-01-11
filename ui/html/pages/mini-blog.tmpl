@@ -1,4 +1,5 @@
 {{define "main"}}
+{{template "search" .}}
 <div class="main">
   {{range zipBlogsToUsers .Blogs .Users}}
     <div class="blog">

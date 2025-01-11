@@ -1,14 +1,14 @@
 {{define "nav"}}
 <nav class="main">
   <div class="left">
-    <a href="/" class="active">Blogs</a>
-    <a href="/blog/create">Create Blog</a>
-    <a href="/blogs">My Blogs</a>
+    <a href="/" {{if (eq .Active "blogs")}}class="active"{{end}}>Blogs</a>
+    <a href="/blog/create" {{if (eq .Active "create")}}class="active"{{end}}>Create Blog</a>
+    <a href="/blogs" {{if (eq .Active "myBlogs")}}class="active"{{end}}>My Blogs</a>
   </div>
   <img src="/static/imgs/logo.png" alt="" />
   <div class="right">
-    <a href="/profile">Profile</a>
-    <a href="/logout">Logout</a>
+    <a href="/profile" {{if (eq .Active "profile")}}class="active"{{end}}>Profile</a>
+    <a href="/logout" {{if (eq .Active "logout")}}class="active"{{end}}>Logout</a>
   </div>
 </nav>
 {{end}}

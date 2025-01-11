@@ -32,6 +32,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 	data.Blogs = blogs
 	data.Users = users
+	data.Active = "blogs"
 
 	app.render(w, "home", http.StatusInternalServerError, data)
 }
@@ -61,8 +62,16 @@ func (app *application) blogView(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	user, err := app.users.Get(blog.UserID)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
 	data := app.newTemplateData(r)
 	data.Blog = blog
+	data.User = user
+	data.Active = "None"
 
 	app.render(w, "blog", http.StatusOK, data)
 }

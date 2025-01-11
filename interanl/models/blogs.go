@@ -43,6 +43,7 @@ func (model *BlogsModel) Get(id int) (*Blog, error) {
 		&blog.UserID,
 		&blog.Created,
 		&blog.Updated,
+		&blog.Views,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
