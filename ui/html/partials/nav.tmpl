@@ -7,7 +7,9 @@
   </div>
   <img src="/static/imgs/logo.png" alt="" />
   <div class="right">
+    <a href="/about" {{if (eq .Active "about")}}class="active"{{end}}>About</a>
     <a href="/profile" {{if (eq .Active "profile")}}class="active"{{end}}>Profile</a>
+    <a href="/user/login" {{if (eq .Active "login")}}class="active"{{end}}>Login</a>
     <a href="/logout" {{if (eq .Active "logout")}}class="active"{{end}}>Logout</a>
   </div>
 </nav>

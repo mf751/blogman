@@ -12,6 +12,7 @@ import (
 
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
+	"github.com/go-playground/form/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 
 	"github.com/mf751/blogman/interanl/models"
@@ -24,6 +25,7 @@ type application struct {
 	blogs          models.BlogsModel
 	templateCache  map[string]*template.Template
 	sessionManager *scs.SessionManager
+	formDecoder    *form.Decoder
 }
 
 func main() {
@@ -49,6 +51,8 @@ func main() {
 		errLogger.Fatal(err)
 	}
 
+	formDecoder := form.NewDecoder()
+
 	sessionManager := scs.New()
 	sessionManager.Store = postgresstore.New(db)
 	sessionManager.Lifetime = 12 * time.Hour
@@ -61,6 +65,7 @@ func main() {
 		blogs:          models.BlogsModel{DB: db},
 		templateCache:  templateCache,
 		sessionManager: sessionManager,
+		formDecoder:    formDecoder,
 	}
 
 	tlsConfig := &tls.Config{

@@ -2,9 +2,13 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"net/http"
 	"text/template"
+
+	"github.com/go-playground/form/v4"
+	"github.com/justinas/nosurf"
 
 	"github.com/mf751/blogman/ui"
 )
@@ -68,5 +72,29 @@ func (app *application) render(
 }
 
 func (app *application) newTemplateData(r *http.Request) *templateData {
-	return &templateData{}
+	return &templateData{
+		CSRFToken: nosurf.Token(r),
+	}
+}
+
+func (app *application) decodePostForm(r *http.Request, target any) error {
+	err := r.ParseForm()
+	if err != nil {
+		return err
+	}
+
+	err = app.formDecoder.Decode(target, r.PostForm)
+	if err != nil {
+		var invalidDecoderError *form.InvalidDecoderError
+		if errors.As(err, &invalidDecoderError) {
+			panic(err)
+		}
+		return err
+	}
+
+	return nil
+}
+
+func (app *application) clientError(w http.ResponseWriter, status int) {
+	http.Error(w, http.StatusText(status), status)
 }

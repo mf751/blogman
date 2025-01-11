@@ -20,6 +20,8 @@ func (app *application) mainMux() http.Handler {
 	mux.Handle(http.MethodGet+" /{$}", firstLayer.ThenFunc(app.home))
 	mux.Handle(http.MethodGet+" /about", firstLayer.ThenFunc(app.about))
 	mux.Handle(http.MethodGet+" /blog/{id}", firstLayer.ThenFunc(app.blogView))
+	mux.Handle(http.MethodGet+" /user/login", firstLayer.ThenFunc(app.userLogin))
+	mux.Handle(http.MethodPost+" /user/login", firstLayer.ThenFunc(app.userLoginPost))
 
 	// not found
 	mux.Handle("GET /", firstLayer.ThenFunc(app.notFound))

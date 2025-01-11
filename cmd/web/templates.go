@@ -9,11 +9,13 @@ import (
 )
 
 type templateData struct {
-	Blog   *models.Blog
-	User   *models.User
-	Blogs  []*models.Blog
-	Users  []*models.User
-	Active string
+	Blog      *models.Blog
+	User      *models.User
+	Blogs     []*models.Blog
+	Users     []*models.User
+	Form      any
+	Active    string
+	CSRFToken string
 }
 
 type BlogUserPair struct {
@@ -59,6 +61,7 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		nav,
 		search,
 		miniBlog,
+		"html/pages/home.tmpl",
 	}
 	templateSet, err := template.New("home").Funcs(functions).ParseFS(ui.Files, patterns...)
 	if err != nil {
@@ -77,6 +80,17 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		return nil, err
 	}
 	cache["blog"] = templateSet
+
+	patterns = []string{
+		base,
+		nav,
+		"html/pages/login.tmpl",
+	}
+	templateSet, err = template.New("login").Funcs(functions).ParseFS(ui.Files, patterns...)
+	if err != nil {
+		return nil, err
+	}
+	cache["login"] = templateSet
 
 	return cache, nil
 }

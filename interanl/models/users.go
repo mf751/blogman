@@ -69,23 +69,24 @@ func (model *UsersModel) Get(id uuid.UUID) (*User, error) {
 	return &user, err
 }
 
-func (model *UsersModel) Authenticate(user User, password string) error {
+func (model *UsersModel) Authenticate(email, password string) (*uuid.UUID, error) {
 	sqlStatment := `SELECT id,hashed_password FROM users WHERE email=$1`
-	err := model.DB.QueryRow(sqlStatment, user.Email).Scan(&user.ID, &user.HashedPassword)
+	user := User{}
+	err := model.DB.QueryRow(sqlStatment, email).Scan(&user.ID, &user.HashedPassword)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return ErrWrongCredintials
+			return nil, ErrWrongCredintials
 		}
-		return err
+		return nil, err
 	}
 	err = bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password))
 	if err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-			return ErrWrongCredintials
+			return nil, ErrWrongCredintials
 		}
-		return err
+		return nil, err
 	}
-	return nil
+	return &user.ID, nil
 }
 
 func (model *UsersModel) ChangePassword(user User, newPassword string) error {
