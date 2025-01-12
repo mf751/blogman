@@ -605,3 +605,7 @@ textarea {
   position: relative;
   display: inline;
 }
+
+.error.nf {
+  font-size: 24px;
+}

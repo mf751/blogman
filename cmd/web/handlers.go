@@ -412,8 +412,10 @@ func (app *application) blogUpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	form.CheckField(form.Title != blog.Title, "title", "Cannot be the same old title")
-	form.CheckField(form.Content != blog.Content, "content", "Cannot be the same old content")
+	if form.Content == blog.Content && form.Title == blog.Title {
+		form.AddNonFieldError("Must update either the title or the content")
+	}
+
 	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Active = "myBlogs"

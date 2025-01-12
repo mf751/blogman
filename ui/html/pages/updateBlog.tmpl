@@ -7,6 +7,9 @@
     <div class="title-blog">
       <h2>Update Blog</h2>
     </div>
+    {{range .Form.NonFieldErrors}}
+      <div class="error nf">{{.}}</div>
+    {{end}}
     <div class="label">Title:</div>
     {{with .Form.FieldErrors.title}}
       <div class="error">{{.}}</div>
