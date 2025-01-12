@@ -1,0 +1,33 @@
+{{define "title"}}Update{{end}}
+{{define "main"}}
+<div class="main">
+  <form action="/blog/update" method="POST">
+    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+    <input type="hidden" name="blog_id" value="{{.Blog.ID}}">
+    <div class="title-blog">
+      <h2>Update Blog</h2>
+    </div>
+    <div class="label">Title:</div>
+    {{with .Form.FieldErrors.title}}
+      <div class="error">{{.}}</div>
+    {{end}}
+    <div class="blog-body">
+      <textarea class="title" name="title">{{.Blog.Title}}</textarea>
+      <div class="shadow"></div>
+    </div>
+    <div class="label s">Content:</div>
+      {{with .Form.FieldErrors.content}}
+    <div class="error">{{.}}</div>
+    {{end}}
+    <div class="blog-body">
+      <textarea class="content" name="content">{{.Blog.Content}}</textarea>
+      <div class="shadow"></div>
+    </div>
+    <div class="create-blog">
+      <input type="submit" value="Update" />
+    </div>
+  </form>
+</div>
+<script src="/static/js/textarea.js">
+</script>
+{{end}}

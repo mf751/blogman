@@ -21,3 +21,9 @@ type blogCreateForm struct {
 	Content             string `form:"content"`
 	validator.Validator `form:"-"`
 }
+
+type blogUpdateForm struct {
+	blogCreateForm
+	BlogID              int `form:"blog_id"`
+	validator.Validator `form:"-"`
+}

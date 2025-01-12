@@ -338,3 +338,97 @@ func (app *application) userBlogs(w http.ResponseWriter, r *http.Request) {
 	data.Users = users
 	app.render(w, "userBlogs", http.StatusOK, data)
 }
+
+func (app *application) blogUpdate(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("id")
+	ID, err := strconv.Atoi(id)
+	if err != nil || ID < 1 {
+		app.notFound(w, r)
+		return
+	}
+	blog, err := app.blogs.Get(ID)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w, r)
+			return
+		} else {
+			app.serverError(w, err)
+			return
+		}
+	}
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	if blog.UserID != userID {
+		app.sessionManager.Put(r.Context(), "flash", "Cannot Update blog")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.Active = "myBlogs"
+	data.Blog = blog
+	data.Form = blogCreateForm{}
+	app.render(w, "update", http.StatusOK, data)
+}
+
+func (app *application) blogUpdatePost(w http.ResponseWriter, r *http.Request) {
+	var form blogUpdateForm
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be empty")
+	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be empty")
+
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Active = "myBlogs"
+		data.Form = form
+		data.Blog = &models.Blog{ID: form.BlogID, Title: form.Title, Content: form.Content}
+		app.render(w, "create", http.StatusUnprocessableEntity, data)
+		return
+	}
+
+	blog, err := app.blogs.Get(form.BlogID)
+	if err != nil {
+		app.notFound(w, r)
+		return
+	}
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	if blog.UserID != userID {
+		app.sessionManager.Put(r.Context(), "flash", "Cannot Update blog")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	form.CheckField(form.Title != blog.Title, "title", "Cannot be the same old title")
+	form.CheckField(form.Content != blog.Content, "content", "Cannot be the same old content")
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Active = "myBlogs"
+		data.Form = form
+		data.Blog = &models.Blog{ID: form.BlogID, Title: form.Title, Content: form.Content}
+		app.render(w, "update", http.StatusUnprocessableEntity, data)
+		return
+	}
+
+	err = app.blogs.UpdateBlog(form.BlogID, form.Title, form.Content)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Blog was updated succussfully")
+	http.Redirect(w, r, fmt.Sprintf("/blog/%v", form.BlogID), http.StatusSeeOther)
+}

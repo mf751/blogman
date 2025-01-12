@@ -129,3 +129,10 @@ func (model *BlogsModel) ByUser(userID uuid.UUID) ([]*Blog, error) {
 	}
 	return blogs, nil
 }
+
+func (model *BlogsModel) UpdateBlog(id int, title, content string) error {
+	sqlStatement := `UPDATE blogs SET title=$1, content=$2 WHERE id=$3 RETURNING id`
+	var temp int
+	err := model.DB.QueryRow(sqlStatement, title, content, id).Scan(&temp)
+	return err
+}

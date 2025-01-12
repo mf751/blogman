@@ -1,14 +1,19 @@
 const textareas = document.querySelectorAll("textarea");
-textareas[0].style.height = "40px";
-textareas[1].style.height = "200px";
+const txr1 = textareas[0];
+const txr2 = textareas[1];
+let scHeight = txr1.scrollHeight; // Get the scroll height of the content
+txr1.style.height = `${scHeight}px`; // Adjust the height to fit content
 
-textareas[0].addEventListener("input", (e) => {
-  textareas[0].style.height = "40px"; // Reset height to minimum
+scHeight = txr2.scrollHeight; // Get the scroll height of the content
+txr2.style.height = `${scHeight}px`; // Adjust the height to fit content
+
+txr1.addEventListener("input", (e) => {
+  txr1.style.height = "40px"; // Reset height to minimum
   let scHeight = e.target.scrollHeight; // Get the scroll height of the content
-  textareas[0].style.height = `${scHeight}px`; // Adjust the height to fit content
+  txr1.style.height = `${scHeight}px`; // Adjust the height to fit content
 });
-textareas[1].addEventListener("input", (e) => {
-  textareas[1].style.height = "200px"; // Reset height to minimum
+txr2.addEventListener("input", (e) => {
+  txr2.style.height = "200px"; // Reset height to minimum
   let scHeight = e.target.scrollHeight; // Get the scroll height of the content
-  textareas[1].style.height = `${scHeight}px`; // Adjust the height to fit content
+  txr2.style.height = `${scHeight}px`; // Adjust the height to fit content
 });

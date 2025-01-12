@@ -23,8 +23,7 @@
             <a href="/blog/{{.ID}}">#{{.ID}}</a>
           </div>
           <div class="blogs-actions">
-            <form method="POST" action="/blog/update">
-              <input type="hidden" name="csrf_token" value="{{$csrf}}">
+            <form method="GET" action="/blog/update/{{.ID}}">
               <input type="hidden" name="id" value="{{.ID}}">
               <input type="submit" value="Update">
             </form>
