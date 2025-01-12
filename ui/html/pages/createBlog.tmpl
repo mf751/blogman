@@ -7,18 +7,18 @@
       <h2>Create Blog</h2>
     </div>
     <div class="label">Title:</div>
+    {{with .Form.FieldErrors.title}}
+      <div class="error">{{.}}</div>
+    {{end}}
     <div class="blog-body">
-      {{with .Form.FieldErrors.title}}
-        <div class="error">{{.}}</div>
-      {{end}}
       <textarea class="title" name="title"></textarea>
       <div class="shadow"></div>
     </div>
     <div class="label s">Content:</div>
-    <div class="blog-body">
       {{with .Form.FieldErrors.content}}
-        <div class="error">{{.}}</div>
-      {{end}}
+    <div class="error">{{.}}</div>
+    {{end}}
+    <div class="blog-body">
       <textarea class="content" name="content"></textarea>
       <div class="shadow"></div>
     </div>

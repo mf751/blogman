@@ -535,7 +535,7 @@ textarea {
 .shadow {
   position: absolute;
   width: 100%;
-  height: calc(100% - 24px);
+  height: calc(100%);
   bottom: 0px;
   left: 0px;
   opacity: 0.66;
