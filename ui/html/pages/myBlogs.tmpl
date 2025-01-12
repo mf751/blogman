@@ -1,0 +1,28 @@
+{{define "title"}}My Blogs{{end}}
+{{define "main"}}
+{{template "search" .}}
+{{with .Flash}}
+  <div class="main flash">
+    <div>{{.}}</div>
+  </div>
+{{end}}
+<div class="main">
+  <div class="my-blogs-actions">
+    <a href="/blog/create">
+      <div>Create Blog</div>
+    </a>
+    <a href="/blog/create" >
+      <div>Update Blog</div>
+    </a>
+    <a href="/blog/create" >
+      <div>Delete Blog</div>
+    </a>
+  </div>
+</div>
+<div class="main heading">
+  <h2>
+    <p>Blogs By {{.User.Name}}:</p>
+  </h2>
+</div>
+{{template "mini" .}}}
+{{end}}

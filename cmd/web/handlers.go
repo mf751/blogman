@@ -228,7 +228,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
-	data.Active = "create"
+	data.Active = "myBlogs"
 	data.Form = blogCreateForm{}
 	app.render(w, "create", http.StatusOK, data)
 }
@@ -246,7 +246,7 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	if !form.Valid() {
 		data := app.newTemplateData(r)
-		data.Active = "create"
+		data.Active = "myBlogs"
 		data.Form = form
 		app.render(w, "create", http.StatusUnprocessableEntity, data)
 		return
@@ -266,4 +266,38 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "flash", "Blog was created succussfully")
 	http.Redirect(w, r, fmt.Sprintf("/blog/%v", id), http.StatusSeeOther)
+}
+
+func (app *application) myBlogs(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	user, err := app.users.Get(userID)
+	user.Created = time.Time{}
+	user.Email = ""
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	blogs, err := app.blogs.ByUser(userID)
+	if err != nil && !errors.Is(err, models.ErrNoRecord) {
+		app.serverError(w, err)
+		return
+	}
+	users := []*models.User{}
+	for _, blog := range blogs {
+		if len(blog.Content) > 500 {
+			blog.Content = blog.Content[:500] + "..."
+		}
+		users = append(users, user)
+	}
+	data := app.newTemplateData(r)
+	data.Active = "myBlogs"
+	data.Users = users
+	data.User = user
+	data.Blogs = blogs
+	app.render(w, "myBlogs", http.StatusOK, data)
 }

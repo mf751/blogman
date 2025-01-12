@@ -1,10 +1,4 @@
-{{define "main"}}
-{{template "search" .}}
-{{with .Flash}}
-  <div class="main flash">
-    <div>{{.}}</div>
-  </div>
-{{end}}
+{{define "mini"}}
 <div class="main">
   {{range zipBlogsToUsers .Blogs .Users}}
     <div class="blog">

@@ -62,6 +62,9 @@ func (model *BlogsModel) Latest() ([]*Blog, error) {
 	sqlStatement := `SELECT * FROM blogs ORDER BY id DESC LIMIT 10`
 	rows, err := model.DB.Query(sqlStatement)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
 		return nil, err
 	}
 	defer rows.Close()
@@ -92,4 +95,37 @@ func (model *BlogsModel) Update(id int, content string) error {
 	sqlStatement := `UPDATE blogs SET content=$1, update=NOW() WHERE id=$2 RETURNING id`
 	err := model.DB.QueryRow(sqlStatement, content, id).Scan(&id)
 	return err
+}
+
+func (model *BlogsModel) ByUser(userID uuid.UUID) ([]*Blog, error) {
+	sqlStatement := `SELECT * FROM blogs WHERE user_id=$1 ORDER BY id DESC`
+	rows, err := model.DB.Query(sqlStatement, userID.String())
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
+		return nil, err
+	}
+	defer rows.Close()
+	blogs := []*Blog{}
+	for rows.Next() {
+		blog := &Blog{}
+		err := rows.Scan(
+			&blog.ID,
+			&blog.Title,
+			&blog.Content,
+			&blog.UserID,
+			&blog.Created,
+			&blog.Updated,
+			&blog.Views,
+		)
+		if err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return blogs, nil
 }
