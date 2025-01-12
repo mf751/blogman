@@ -1,7 +1,7 @@
 {{define "title"}}Create{{end}}
 {{define "main"}}
 <div class="main">
-  <form action="/blog" method="POST">
+  <form action="/blog/create" method="POST">
     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
     <div class="title-blog">
       <h2>Create Blog</h2>
@@ -11,7 +11,7 @@
       <div class="error">{{.}}</div>
     {{end}}
     <div class="blog-body">
-      <textarea class="title" name="title"></textarea>
+      <textarea class="title" name="title">{{.Form.Title}}</textarea>
       <div class="shadow"></div>
     </div>
     <div class="label s">Content:</div>
@@ -19,7 +19,7 @@
     <div class="error">{{.}}</div>
     {{end}}
     <div class="blog-body">
-      <textarea class="content" name="content"></textarea>
+      <textarea class="content" name="content">{{.Form.Content}}</textarea>
       <div class="shadow"></div>
     </div>
     <div class="create-blog">

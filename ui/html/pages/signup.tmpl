@@ -16,17 +16,17 @@
       {{with .Form.FieldErrors.name}}
         <div class="error">{{.}}</div>
       {{end}}
-      <input type="text" name="name" placeholder="John Doe" />
+      <input type="text" name="name" value="{{.Form.Name}}" placeholder="John Doe" />
       <label for="email">Username: </label>
       {{with .Form.FieldErrors.username}}
         <div class="error">{{.}}</div>
       {{end}}
-      <input type="text" name="username" placeholder="johndoe33" />
+      <input type="text" name="username" value="{{.Form.UserName}}" placeholder="johndoe33" />
       <label for="email">Email: </label>
       {{with .Form.FieldErrors.email}}
         <div class="error">{{.}}</div>
       {{end}}
-      <input type="text" name="email" placeholder="example@test.com" />
+      <input type="text" name="email" value="{{.Form.Email}}" placeholder="example@test.com" />
       <label for="password">Password: </label>
       {{with .Form.FieldErrors.password}}
         <div class="error">{{.}}</div>

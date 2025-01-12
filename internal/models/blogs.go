@@ -136,3 +136,13 @@ func (model *BlogsModel) UpdateBlog(id int, title, content string) error {
 	err := model.DB.QueryRow(sqlStatement, title, content, id).Scan(&temp)
 	return err
 }
+
+func (model *BlogsModel) DeleteBlog(id int) error {
+	sqlStatement := `DELETE FROM blogs WHERE id=$1 RETURNING id`
+	var temp int
+	err := model.DB.QueryRow(sqlStatement, id).Scan(&temp)
+	if errors.Is(err, sql.ErrNoRows) {
+		return ErrNoRecord
+	}
+	return err
+}

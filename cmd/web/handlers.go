@@ -434,3 +434,50 @@ func (app *application) blogUpdatePost(w http.ResponseWriter, r *http.Request) {
 	app.sessionManager.Put(r.Context(), "flash", "Blog was updated succussfully")
 	http.Redirect(w, r, fmt.Sprintf("/blog/%v", form.BlogID), http.StatusSeeOther)
 }
+
+func (app *application) blogDeletePost(w http.ResponseWriter, r *http.Request) {
+	var form struct {
+		Id int `form:"id"`
+	}
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	blog, err := app.blogs.Get(form.Id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w, r)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	if blog.UserID != userID {
+		app.sessionManager.Put(r.Context(), "flash", "Failed to delete blog")
+		http.Redirect(w, r, "/blogs", http.StatusSeeOther)
+		return
+	}
+
+	err = app.blogs.DeleteBlog(form.Id)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w, r)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Blog deleted succussfully")
+	http.Redirect(w, r, "/blogs", http.StatusSeeOther)
+}
