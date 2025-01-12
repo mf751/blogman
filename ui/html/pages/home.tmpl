@@ -1,1 +1,15 @@
 {{define "title"}}Home{{end}}
+{{define "main"}}
+{{template "search" .}}
+{{with .Flash}}
+  <div class="main flash">
+    <div>{{.}}</div>
+  </div>
+{{end}}
+<div class="main heading">
+  <h2>
+    <p>Latest blogs:</p>
+  </h2>
+</div>
+{{template "mini" .}}
+{{end}}

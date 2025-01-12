@@ -558,3 +558,63 @@ textarea {
   font-family: "Lilita One", sans-serif;
   font-family: "Playpen Sans", cursive;
 }
+
+.main .my-blogs-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.main .my-blogs-actions a {
+  background-color: white;
+  flex-basis: calc(32.6% - 30px);
+  padding: 15px;
+  border-radius: 2px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.main .my-blogs-actions div {
+  position: relative;
+  color: black;
+  text-decoration: none;
+}
+
+.main .my-blogs-actions a div::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  translate: -50%;
+  width: 0;
+  height: 4px;
+  background-color: black;
+  transition: width 0.3s;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.main .my-blogs-actions a:hover div::after {
+  width: calc(100% + 8px);
+}
+
+.main.heading p {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  display: inline;
+}
+
+.main.heading p::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  translate: -50%;
+  width: 100%;
+  height: 4px;
+  background-color: white;
+  transition: width 0.3s;
+  border-radius: 4px;
+  z-index: 2;
+}
