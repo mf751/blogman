@@ -6,23 +6,50 @@
     <div>{{.}}</div>
   </div>
 {{end}}
-<div class="main">
-  <div class="my-blogs-actions">
-    <a href="/blog/create">
-      <div>Create Blog</div>
-    </a>
-    <a href="/blog/update" >
-      <div>Update Blog</div>
-    </a>
-    <a href="/blog/delete" >
-      <div>Delete Blog</div>
-    </a>
-  </div>
-</div>
 <div class="main heading">
   <h2>
     <p>Blogs By {{.User.Name}}:</p>
   </h2>
 </div>
-{{template "mini" .}}}
+<div class="main">
+  {{$user := .User}}
+  {{$csrf := .CSRFToken}}
+  {{range .Blogs}}
+    <div class="blog">
+      <div>
+        <div>
+          <div>
+            <a href="/user/{{$user.UserName}}">{{$user.Name}}</a>
+            <a href="/blog/{{.ID}}">#{{.ID}}</a>
+          </div>
+          <div class="blogs-actions">
+            <form method="POST" action="/blog/update">
+              <input type="hidden" name="csrf_token" value="{{$csrf}}">
+              <input type="hidden" name="id" value="{{.ID}}">
+              <input type="submit" value="Update">
+            </form>
+            <form method="POST" action="/blog/delete">
+              <input type="hidden" name="csrf_token" value="{{$csrf}}">
+              <input type="hidden" name="id" value="{{.ID}}">
+              <input type="submit" value="Delete">
+            </form>
+          </div>
+        </div>
+        <h2>
+          <a href="/blog/{{.ID}}">{{.Title}}</a>
+        </h2>
+        <p>
+          {{.Content}}
+        </p>
+      </div>
+      <div>
+        <span>Views: {{.Views}}</span>
+        <div>
+          <span>Updated: {{humanDate .Updated}}</span>
+          <span>Created: {{humanDate .Created}}</span>
+        </div>
+      </div>
+    </div>
+  {{end}}
+</div>
 {{end}}

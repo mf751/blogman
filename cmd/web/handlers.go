@@ -287,16 +287,13 @@ func (app *application) myBlogs(w http.ResponseWriter, r *http.Request) {
 		app.serverError(w, err)
 		return
 	}
-	users := []*models.User{}
 	for _, blog := range blogs {
 		if len(blog.Content) > 500 {
 			blog.Content = blog.Content[:500] + "..."
 		}
-		users = append(users, user)
 	}
 	data := app.newTemplateData(r)
 	data.Active = "myBlogs"
-	data.Users = users
 	data.User = user
 	data.Blogs = blogs
 	app.render(w, "myBlogs", http.StatusOK, data)

@@ -228,7 +228,7 @@ h2 {
 
 .blog div:first-child div:first-child {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
 }
 
 .blog div:first-child div:first-child div {
@@ -236,6 +236,8 @@ h2 {
   padding: 4px;
   border-radius: 0 0 4px 0;
   padding: 2px 15px;
+  align-items: center;
+  display: flex;
 }
 
 .blog div:first-child div:first-child div a {
@@ -244,6 +246,7 @@ h2 {
 }
 .blog div:first-child div:first-child div a:last-of-type {
   text-decoration: none;
+  margin-right: 0;
 }
 
 .blog > div:nth-child(2) {
@@ -559,44 +562,39 @@ textarea {
   font-family: "Playpen Sans", cursive;
 }
 
-.main .my-blogs-actions {
+.main .blogs-actions {
   display: flex;
   justify-content: space-between;
+  border-radius: 0 0 0 4px !important;
+  padding: 4px !important;
 }
 
-.main .my-blogs-actions a {
+.main .blogs-actions form {
   background-color: white;
   flex-basis: calc(32.6% - 30px);
-  padding: 15px;
-  border-radius: 2px;
+  padding: 0px 10px;
+  border-radius: 6px;
   text-decoration: none;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-.main .my-blogs-actions div {
-  position: relative;
-  color: black;
-  text-decoration: none;
-  font-size: 20px;
-}
-
-.main .my-blogs-actions a div::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  translate: -50%;
-  width: 0;
-  height: 4px;
   background-color: black;
-  transition: width 0.3s;
-  border-radius: 4px;
-  z-index: 2;
+  color: white !important;
 }
 
-.main .my-blogs-actions a:hover div::after {
-  width: calc(100% + 8px);
+.main .blogs-actions input[type="submit"] {
+  color: white;
+  text-decoration: none;
+  background-color: transparent;
+  border: none;
+  font-weight: bolder;
+  font-size: 20px;
+  font-family: "Lilita One", sans-serif;
+  font-family: "Playpen Sans", cursive;
+}
+
+.main .blogs-actions form:first-of-type {
+  margin-right: 12px;
 }
 
 .main.heading p {
@@ -604,18 +602,4 @@ textarea {
   padding: 0;
   position: relative;
   display: inline;
-}
-
-.main.heading p::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  translate: -50%;
-  width: 100%;
-  height: 4px;
-  background-color: white;
-  transition: width 0.3s;
-  border-radius: 4px;
-  z-index: 2;
 }
