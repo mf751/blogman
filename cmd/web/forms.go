@@ -1,6 +1,6 @@
 package main
 
-import "github.com/mf751/blogman/interanl/validator"
+import "github.com/mf751/blogman/internal/validator"
 
 type userLoginForm struct {
 	Email               string `form:"email"`

@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/mf751/blogman/interanl/models"
+	"github.com/mf751/blogman/internal/models"
 	"github.com/mf751/blogman/ui"
 )
 
@@ -139,6 +139,19 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		return nil, err
 	}
 	cache["myBlogs"] = templateSet
+
+	patterns = []string{
+		base,
+		nav,
+		search,
+		miniBlog,
+		"html/pages/userBlogs.tmpl",
+	}
+	templateSet, err = template.New("userBlogs").Funcs(functions).ParseFS(ui.Files, patterns...)
+	if err != nil {
+		return nil, err
+	}
+	cache["userBlogs"] = templateSet
 
 	return cache, nil
 }

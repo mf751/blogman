@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/mf751/blogman/interanl/models"
-	"github.com/mf751/blogman/interanl/validator"
+	"github.com/mf751/blogman/internal/models"
+	"github.com/mf751/blogman/internal/validator"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -297,4 +297,44 @@ func (app *application) myBlogs(w http.ResponseWriter, r *http.Request) {
 	data.User = user
 	data.Blogs = blogs
 	app.render(w, "myBlogs", http.StatusOK, data)
+}
+
+func (app *application) userBlogs(w http.ResponseWriter, r *http.Request) {
+	username := r.PathValue("username")
+	user, err := app.users.GetByUsername(username)
+	if err != nil {
+		if errors.Is(err, models.ErrNoRecord) {
+			app.notFound(w, r)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	blogs, err := app.blogs.ByUser(user.ID)
+	if err != nil && err != models.ErrNoRecord {
+		app.serverError(w, err)
+		return
+	}
+	user.Created = time.Time{}
+	user.Email = ""
+	user.ID = uuid.Nil
+	users := []*models.User{}
+	for _, blog := range blogs {
+		if len(blog.Content) > 500 {
+			blog.Content = blog.Content[:500] + "..."
+		}
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		users = append(users, user)
+	}
+
+	data := app.newTemplateData(r)
+	data.User = user
+	data.Active = "None"
+	data.Blogs = blogs
+	data.Users = users
+	app.render(w, "userBlogs", http.StatusOK, data)
 }

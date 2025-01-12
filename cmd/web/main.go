@@ -15,7 +15,7 @@ import (
 	"github.com/go-playground/form/v4"
 	"github.com/jackc/pgx/v4/stdlib"
 
-	"github.com/mf751/blogman/interanl/models"
+	"github.com/mf751/blogman/internal/models"
 )
 
 type application struct {

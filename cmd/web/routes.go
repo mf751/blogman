@@ -24,6 +24,7 @@ func (app *application) mainMux() http.Handler {
 	mux.Handle(http.MethodPost+" /user/login", firstLayer.ThenFunc(app.userLoginPost))
 	mux.Handle(http.MethodGet+" /user/signup", firstLayer.ThenFunc(app.userSignup))
 	mux.Handle(http.MethodPost+" /user/signup", firstLayer.ThenFunc(app.userSignupPost))
+	mux.Handle(http.MethodGet+" /user/{username}", firstLayer.ThenFunc(app.userBlogs))
 
 	secondLayer := firstLayer.Append(app.requireAuthentication)
 	mux.Handle(http.MethodGet+" /blogs", secondLayer.ThenFunc(app.myBlogs))

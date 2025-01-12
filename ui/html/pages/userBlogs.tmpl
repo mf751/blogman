@@ -1,0 +1,15 @@
+{{define "title"}}{{.User.Name}}{{end}}
+{{define "main"}}
+{{template "search" .}}
+{{with .Flash}}
+  <div class="main flash">
+    <div>{{.}}</div>
+  </div>
+{{end}}
+<div class="main heading">
+  <h2>
+    <p>Blogs By {{.User.Name}}:</p>
+  </h2>
+</div>
+{{template "mini" .}}
+{{end}}
