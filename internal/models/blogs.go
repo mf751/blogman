@@ -146,3 +146,13 @@ func (model *BlogsModel) DeleteBlog(id int) error {
 	}
 	return err
 }
+
+func (model *UsersModel) GetBlogsNumber(ID uuid.UUID) (int, error) {
+	sqlStatment := `SELECT count(*) FROM blogs WHERE user_id=$1`
+	var numberOfBlogs int
+	err := model.DB.QueryRow(sqlStatment, ID).Scan(&numberOfBlogs)
+	if errors.Is(err, sql.ErrNoRows) {
+		return numberOfBlogs, ErrNoRecord
+	}
+	return numberOfBlogs, err
+}

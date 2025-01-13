@@ -41,10 +41,10 @@ func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
 		var pgError *pgconn.PgError
 		if errors.As(err, &pgError) {
 			if pgError.Code == "23505" {
-				if strings.Contains(pgError.Message, "users_uc_email") {
-					return uuid.New(), ErrRepeatedEmail
-				} else if strings.Contains(pgError.Message, "users_uc_username") {
+				if strings.Contains(pgError.Message, "users_uc_username") {
 					return uuid.New(), ErrRepeatedUserName
+				} else if strings.Contains(pgError.Message, "users_uc_email") {
+					return uuid.New(), ErrRepeatedEmail
 				}
 			} else if errors.Is(err, sql.ErrNoRows) {
 				return uuid.New(), ErrNoRecord

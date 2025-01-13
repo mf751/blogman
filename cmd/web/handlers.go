@@ -207,10 +207,10 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 	ID, err := app.users.Insert(user)
 	if err != nil {
 		data := app.newTemplateData(r)
-		if errors.Is(err, models.ErrRepeatedEmail) {
-			form.AddNonFieldError("A uesr exists with this email")
-		} else if errors.Is(err, models.ErrRepeatedUserName) {
+		if errors.Is(err, models.ErrRepeatedUserName) {
 			form.AddNonFieldError("Username already taken")
+		} else if errors.Is(err, models.ErrRepeatedEmail) {
+			form.AddNonFieldError("A uesr exists with this email")
 		} else {
 			app.serverError(w, err)
 			return
@@ -228,7 +228,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
 func (app *application) blogCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
-	data.Active = "myBlogs"
+	data.Active = "create"
 	data.Form = blogCreateForm{}
 	app.render(w, "create", http.StatusOK, data)
 }
@@ -246,7 +246,7 @@ func (app *application) blogCreatePost(w http.ResponseWriter, r *http.Request) {
 
 	if !form.Valid() {
 		data := app.newTemplateData(r)
-		data.Active = "myBlogs"
+		data.Active = "create"
 		data.Form = form
 		app.render(w, "create", http.StatusUnprocessableEntity, data)
 		return
@@ -480,4 +480,30 @@ func (app *application) blogDeletePost(w http.ResponseWriter, r *http.Request) {
 
 	app.sessionManager.Put(r.Context(), "flash", "Blog deleted succussfully")
 	http.Redirect(w, r, "/blogs", http.StatusSeeOther)
+}
+
+func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	numberOfBlogs, err := app.users.GetBlogsNumber(userID)
+	if err != nil && !errors.Is(err, models.ErrNoRecord) {
+		app.serverError(w, err)
+		return
+	}
+	user, err := app.users.Get(userID)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	data := app.newTemplateData(r)
+	data.Active = "account"
+	data.Form = struct{ NumberOfBlogs int }{NumberOfBlogs: numberOfBlogs}
+	data.User = user
+	app.render(w, "account", http.StatusOK, data)
 }

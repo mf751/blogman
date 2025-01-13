@@ -1,0 +1,40 @@
+{{define "title"}}Account{{end}}
+{{define "main"}}
+{{with .Flash}}
+  <div class="main flash">
+    <div>{{.}}</div>
+  </div>
+{{end}}
+<div class="main center">
+  <div class="container change">
+    <div><h2>Account Information</h2></div>
+    <div class="info">
+      <label>Name</label>
+      <div class="field">{{.User.Name}}</div>
+    </div>
+    <div class="info">
+      <label>User Name</label>
+      <div class="field">{{.User.UserName}}</div>
+    </div>
+    <div class="info">
+      <label>Email</label>
+      <div class="field">{{.User.Email}}</div>
+    </div>
+    <div class="info">
+      <label>Number of blogs</label>
+      <div class="field">{{.Form.NumberOfBlogs}}</div>
+    </div>
+    <div class="info">
+      <label>Created</label>
+      <div class="field">{{humanDate .User.Created}}</div>
+    </div>
+    <div class="info">
+      <label>ID</label>
+      <div class="field ">{{.User.ID}}</div>
+    </div>
+  </div>
+  <div>
+    <a href="/password/change" class="change-password">Change password</a>
+  </div>
+</div>
+{{end}}
