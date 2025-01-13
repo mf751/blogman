@@ -34,6 +34,11 @@ func (app *application) mainMux() http.Handler {
 	mux.Handle(http.MethodPost+" /blog/update", secondLayer.ThenFunc(app.blogUpdatePost))
 	mux.Handle(http.MethodPost+" /blog/delete", secondLayer.ThenFunc(app.blogDeletePost))
 	mux.Handle(http.MethodGet+" /account", secondLayer.ThenFunc(app.userAccount))
+	mux.Handle(http.MethodGet+" /password/change", secondLayer.ThenFunc(app.userChangePassword))
+	mux.Handle(
+		http.MethodPost+" /password/change",
+		secondLayer.ThenFunc(app.userChangePasswordPost),
+	)
 	mux.Handle(http.MethodPost+" /user/logout", secondLayer.ThenFunc(app.userLogoutPost))
 
 	// not found

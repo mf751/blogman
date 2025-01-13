@@ -55,13 +55,14 @@ func (model *UsersModel) Insert(user User) (uuid.UUID, error) {
 }
 
 func (model *UsersModel) Get(id uuid.UUID) (*User, error) {
-	sqlStatment := `SELECT name, username, email, created FROM users WHERE id=$1;`
+	sqlStatment := `SELECT name, username, email, created, hashed_password FROM users WHERE id=$1;`
 	user := User{ID: id}
 	err := model.DB.QueryRow(sqlStatment, id.String()).Scan(
 		&user.Name,
 		&user.UserName,
 		&user.Email,
 		&user.Created,
+		&user.HashedPassword,
 	)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrNoRecord
@@ -89,16 +90,10 @@ func (model *UsersModel) Authenticate(email, password string) (*uuid.UUID, error
 	return &user.ID, nil
 }
 
-func (model *UsersModel) ChangePassword(user User, newPassword string) error {
-	sqlStatment1 := `SELECT hashed_password From users WHERE id=$1`
-	sqlStatment2 := `UPDATE users SET hashed_password=$1 WHERE id=$2 RETURNING id;`
-	var password string
-	err := model.DB.QueryRow(sqlStatment1, user.ID).Scan(&password)
-	if err != nil {
-		return err
-	}
+func (model *UsersModel) ChangePassword(user *User, currentPassword, newPassword string) error {
+	sqlStatment := `UPDATE users SET hashed_password=$1 WHERE id=$2 RETURNING id;`
 
-	if err = bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(currentPassword)); err != nil {
 		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
 			return ErrWrongCredintials
 		}
@@ -108,7 +103,7 @@ func (model *UsersModel) ChangePassword(user User, newPassword string) error {
 	if err != nil {
 		return err
 	}
-	err = model.DB.QueryRow(sqlStatment2, string(newHashedPassword), user.ID).Scan(&user.ID)
+	err = model.DB.QueryRow(sqlStatment, string(newHashedPassword), user.ID).Scan(&user.ID)
 	return err
 }
 

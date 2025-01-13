@@ -29,6 +29,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		user, err := app.users.Get(blog.UserID)
 		user.Created = time.Time{}
 		user.Email = ""
+		user.HashedPassword = []byte("")
 		if err != nil {
 			app.serverError(w, err)
 			return
@@ -278,6 +279,7 @@ func (app *application) myBlogs(w http.ResponseWriter, r *http.Request) {
 	user, err := app.users.Get(userID)
 	user.Created = time.Time{}
 	user.Email = ""
+	user.HashedPassword = []byte("")
 	if err != nil {
 		app.serverError(w, err)
 		return
@@ -318,6 +320,7 @@ func (app *application) userBlogs(w http.ResponseWriter, r *http.Request) {
 	}
 	user.Created = time.Time{}
 	user.Email = ""
+	user.HashedPassword = []byte("")
 	user.ID = uuid.Nil
 	users := []*models.User{}
 	for _, blog := range blogs {
@@ -506,4 +509,90 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 	data.Form = struct{ NumberOfBlogs int }{NumberOfBlogs: numberOfBlogs}
 	data.User = user
 	app.render(w, "account", http.StatusOK, data)
+}
+
+func (app *application) userChangePassword(w http.ResponseWriter, r *http.Request) {
+	data := app.newTemplateData(r)
+	data.Active = "account"
+	data.Form = passwordChangeForm{}
+	app.render(w, "changePassword", http.StatusOK, data)
+}
+
+func (app *application) userChangePasswordPost(w http.ResponseWriter, r *http.Request) {
+	var form passwordChangeForm
+	err := app.decodePostForm(r, &form)
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	form.CheckField(
+		validator.NotBlank(form.CurrentPassword),
+		"currentPassword",
+		"This field cannot be blank",
+	)
+	form.CheckField(
+		validator.NotBlank(form.NewPassword),
+		"newPassword",
+		"This field cannot be blank",
+	)
+	form.CheckField(
+		validator.NotBlank(form.ConfirmNewPassword),
+		"confirmNewPassword",
+		"This field cannot be blank",
+	)
+	form.CheckField(
+		validator.MinChars(form.NewPassword, 8),
+		"newPassword",
+		"This field must be 8 charachters at least",
+	)
+	form.CheckField(
+		form.NewPassword == form.ConfirmNewPassword,
+		"confirmNewPassword",
+		"This field must match the new password",
+	)
+	if !form.Valid() {
+		data := app.newTemplateData(r)
+		data.Form = form
+		data.Active = "account"
+		app.render(w, "changePassword", http.StatusUnprocessableEntity, data)
+		return
+	}
+	if form.CurrentPassword == form.NewPassword {
+		form.AddNonFieldError("New password cannot be the old password")
+		data := app.newTemplateData(r)
+		data.Form = form
+		data.Active = "account"
+		app.render(w, "changePassword", http.StatusUnprocessableEntity, data)
+		return
+	}
+	userId := r.Context().Value(isAuthenticatedKey)
+	userID, err := uuid.Parse(userId.(string))
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+	user, err := app.users.Get(userID)
+	if err != nil {
+		// Won't reach here in the first place if the usres.Get in the middle requireAuth failed
+		app.serverError(w, err)
+		return
+	}
+
+	err = app.users.ChangePassword(user, form.CurrentPassword, form.NewPassword)
+	if err != nil {
+		if errors.Is(err, models.ErrWrongCredintials) {
+			form.AddNonFieldError("Incorrect Password")
+			data := app.newTemplateData(r)
+			data.Active = "account"
+			data.Form = form
+			app.render(w, "changePassword", http.StatusUnprocessableEntity, data)
+		} else {
+			app.serverError(w, err)
+		}
+		return
+	}
+
+	app.sessionManager.Put(r.Context(), "flash", "Password Changed succussfully")
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

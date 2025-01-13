@@ -18,7 +18,7 @@
       {{with .Form.FieldErrors.email}}
         <div class="error">{{.}}</div>
       {{end}}
-      <input type="text" name="email" placeholder="example@test.com" />
+      <input type="text" name="email" value="{{.Form.Email}}" placeholder="example@test.com" />
       <label for="password">Password: </label>
       {{with .Form.FieldErrors.password}}
         <div class="error">{{.}}</div>

@@ -27,3 +27,10 @@ type blogUpdateForm struct {
 	BlogID              int `form:"blog_id"`
 	validator.Validator `form:"-"`
 }
+
+type passwordChangeForm struct {
+	CurrentPassword    string `form:"current_password"`
+	NewPassword        string `form:"new_password"`
+	ConfirmNewPassword string `form:"confirm_new_password"`
+  validator.Validator
+}
