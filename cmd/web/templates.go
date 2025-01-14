@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"time"
 
@@ -63,145 +64,29 @@ func newTemplateCache() (map[string]*template.Template, error) {
 		nav,
 		search,
 		miniBlog,
-		"html/pages/home.tmpl",
 	}
-	templateSet, err := template.New("home").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
+	for _, name := range []string{"home", "search", "myBlogs", "userBlogs", "blog"} {
+		patterns = append(patterns, fmt.Sprintf("html/pages/%v.tmpl", name))
+		templateSet, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
+		if err != nil {
+			return nil, err
+		}
+		cache[name] = templateSet
+
 	}
-	cache["home"] = templateSet
 
 	patterns = []string{
 		base,
 		nav,
-		search,
-		"html/pages/blog.tmpl",
 	}
-	templateSet, err = template.New("blog").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
+	for _, name := range []string{"login", "signup", "about", "create", "update", "account", "changePassword"} {
+		patterns = append(patterns, fmt.Sprintf("html/pages/%v.tmpl", name))
+		templateSet, err := template.New(name).Funcs(functions).ParseFS(ui.Files, patterns...)
+		if err != nil {
+			return nil, err
+		}
+		cache[name] = templateSet
 	}
-	cache["blog"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/login.tmpl",
-	}
-	templateSet, err = template.New("login").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["login"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/signup.tmpl",
-	}
-	templateSet, err = template.New("signup").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["signup"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/about.tmpl",
-	}
-	templateSet, err = template.New("about").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["about"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/createBlog.tmpl",
-	}
-	templateSet, err = template.New("create").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["create"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		search,
-		miniBlog,
-		"html/pages/myBlogs.tmpl",
-	}
-	templateSet, err = template.New("myBlogs").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["myBlogs"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		search,
-		miniBlog,
-		"html/pages/userBlogs.tmpl",
-	}
-	templateSet, err = template.New("userBlogs").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["userBlogs"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/updateBlog.tmpl",
-	}
-	templateSet, err = template.New("update").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["update"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/account.tmpl",
-	}
-	templateSet, err = template.New("account").Funcs(functions).ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["account"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		"html/pages/changePassword.tmpl",
-	}
-	templateSet, err = template.New("changePassword").
-		Funcs(functions).
-		ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["changePassword"] = templateSet
-
-	patterns = []string{
-		base,
-		nav,
-		search,
-		miniBlog,
-		"html/pages/search.tmpl",
-	}
-	templateSet, err = template.New("search").
-		Funcs(functions).
-		ParseFS(ui.Files, patterns...)
-	if err != nil {
-		return nil, err
-	}
-	cache["search"] = templateSet
 
 	return cache, nil
 }
