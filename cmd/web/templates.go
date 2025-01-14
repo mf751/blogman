@@ -188,5 +188,20 @@ func newTemplateCache() (map[string]*template.Template, error) {
 	}
 	cache["changePassword"] = templateSet
 
+	patterns = []string{
+		base,
+		nav,
+		search,
+		miniBlog,
+		"html/pages/search.tmpl",
+	}
+	templateSet, err = template.New("search").
+		Funcs(functions).
+		ParseFS(ui.Files, patterns...)
+	if err != nil {
+		return nil, err
+	}
+	cache["search"] = templateSet
+
 	return cache, nil
 }

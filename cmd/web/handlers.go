@@ -493,7 +493,7 @@ func (app *application) userAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	numberOfBlogs, err := app.users.GetBlogsNumber(userID)
+	numberOfBlogs, err := app.blogs.GetBlogsNumber(userID)
 	if err != nil && !errors.Is(err, models.ErrNoRecord) {
 		app.serverError(w, err)
 		return
@@ -595,4 +595,38 @@ func (app *application) userChangePasswordPost(w http.ResponseWriter, r *http.Re
 
 	app.sessionManager.Put(r.Context(), "flash", "Password Changed succussfully")
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *application) search(w http.ResponseWriter, r *http.Request) {
+	searchBy := r.URL.Query().Get("search-by")
+	searchKey := r.URL.Query().Get("search-key")
+	searchUser := r.URL.Query().Get("search-user")
+	blogs, err := app.blogs.SearchBy(searchBy, searchKey, searchUser)
+	if err != nil && !errors.Is(err, models.ErrNoRecord) {
+		app.serverError(w, err)
+		return
+	}
+
+	users := []*models.User{}
+	for _, blog := range blogs {
+		if len(blog.Content) > 500 {
+			blog.Content = blog.Content[:500] + "..."
+		}
+		user, err := app.users.Get(blog.UserID)
+		user.Created = time.Time{}
+		user.Email = ""
+		user.HashedPassword = []byte("")
+		if err != nil {
+			app.serverError(w, err)
+			return
+		}
+		users = append(users, user)
+	}
+
+	data := app.newTemplateData(r)
+	data.Active = "blogs"
+	data.Blogs = blogs
+	data.Users = users
+	data.Form = struct{ SearchQuery string }{SearchQuery: searchKey}
+	app.render(w, "search", http.StatusOK, data)
 }

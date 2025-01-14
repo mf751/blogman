@@ -147,7 +147,7 @@ func (model *BlogsModel) DeleteBlog(id int) error {
 	return err
 }
 
-func (model *UsersModel) GetBlogsNumber(ID uuid.UUID) (int, error) {
+func (model *BlogsModel) GetBlogsNumber(ID uuid.UUID) (int, error) {
 	sqlStatment := `SELECT count(*) FROM blogs WHERE user_id=$1`
 	var numberOfBlogs int
 	err := model.DB.QueryRow(sqlStatment, ID).Scan(&numberOfBlogs)
@@ -155,4 +155,57 @@ func (model *UsersModel) GetBlogsNumber(ID uuid.UUID) (int, error) {
 		return numberOfBlogs, ErrNoRecord
 	}
 	return numberOfBlogs, err
+}
+
+func (model *BlogsModel) SearchBy(searchBy, searchKey, searchUser string) ([]*Blog, error) {
+	var (
+		rows *sql.Rows
+		err  error
+	)
+	if searchBy == "User" {
+		sqlStatement := `
+SELECT blogs.id, blogs.title, blogs.content, blogs.user_id, blogs.created, blogs.updated, blogs.views 
+FROM blogs JOIN users ON blogs.user_id = users.id 
+WHERE blogs.title LIKE '%' || $1 || '%' AND users.name LIKE  $2 || '%'
+    `
+		rows, err = model.DB.Query(sqlStatement, searchKey, searchUser)
+	} else if searchBy == "Latest" {
+		sqlStatement := `
+SELECT * FROM blogs WHERE title LIKE '%' || $1 || '%' ORDER BY created DESC 
+    `
+		rows, err = model.DB.Query(sqlStatement, searchKey)
+	} else {
+		sqlStatement := `
+SELECT * FROM blogs WHERE title LIKE '%' || $1 || '%' ORDER BY views DESC 
+    `
+		rows, err = model.DB.Query(sqlStatement, searchKey)
+	}
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		}
+		return nil, err
+	}
+	defer rows.Close()
+	blogs := []*Blog{}
+	for rows.Next() {
+		blog := &Blog{}
+		err := rows.Scan(
+			&blog.ID,
+			&blog.Title,
+			&blog.Content,
+			&blog.UserID,
+			&blog.Created,
+			&blog.Updated,
+			&blog.Views,
+		)
+		if err != nil {
+			return nil, err
+		}
+		blogs = append(blogs, blog)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+	return blogs, nil
 }

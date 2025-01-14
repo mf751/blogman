@@ -1,0 +1,8 @@
+{{define "title"}}{{.Form.SearchQuery}}{{end}}
+{{define "main"}}
+{{template "search" .}}
+{{with .Flash}}
+  <div class="main flash">{{.}}</div>
+{{end}}
+{{template "mini" .}}
+{{end}}
