@@ -1,6 +1,16 @@
 # Blogman
 
-A website for uploading and reading blogs
+A website for managing blogs
+
+## Some of the features:
+
+- Authorizaion / Authentication
+- login / signup
+- create / update / delete blogs
+- search blogs
+- form validatoin detection
+- account and change password
+- see a users blogs
 
 ## Initial Sketch
 
