@@ -35,7 +35,7 @@ func main() {
 	address := flag.String("addr", ":4001", "HTTP network address")
 	dsn := flag.String(
 		"dsn",
-		"postgres://postgres:1319@localhost:5432/blogman",
+		"postgres://postgres:@localhost:5432/blogman",
 		"Postgresql data source name",
 	)
 	flag.Parse()
